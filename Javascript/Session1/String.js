@@ -29,13 +29,13 @@
 // console.log(`${str1} ${str2}`); // Template literals
 
 let myString = "Hello World";
-console.log(myString.length);
+// console.log(myString.length);
 
-console.log(myString.toUpperCase());
-console.log(myString.toLowerCase());
-console.log(myString.charAt(6));
-console.log(myString.indexOf("W")); // 6
-console.log(myString.slice(2, 7)); //llo W
+// console.log(myString.toUpperCase());
+// console.log(myString.toLowerCase());
+// console.log(myString.charAt(6));
+// console.log(myString.indexOf("W")); // 6
+// console.log(myString.slice(2, 7)); //llo W
 
 console.log(myString.replace("l", "j")); // Hello Javascript
 console.log(myString.replaceAll("l", "j")); // Hejjo Worjd
