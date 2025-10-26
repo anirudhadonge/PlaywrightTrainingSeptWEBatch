@@ -1,4 +1,5 @@
 import {test} from '@playwright/test'
+import { BasePage } from '../PageModel/BasePage';
 /**
  * 
  * getByrole()
@@ -19,7 +20,9 @@ test('Element by Role',async({page})=>{
 
 test('Element by Label',async({page})=>{
     await page.goto("https://the-internet.herokuapp.com/login");
-    await page.getByLabel('Username').fill('TomSmith')
+    let basePage = new BasePage(page);
+    await basePage.getByLabel('Username').fill('TomSmith');
+    //await page.getByLabel('Username').fill('TomSmith')
 })
 
 test("Element by PlaceHolder",async({page})=>{
@@ -34,8 +37,10 @@ test("Element by Text",async({page})=>{
     
 })
 
-test.only("Element by Title",async({page})=>{
+test("Element by Title",async({page})=>{
     await page.goto("https://playwright.dev/");
     await page.getByTitle("system mode").click();
     //await page.getByTestId()
 })
+
+
