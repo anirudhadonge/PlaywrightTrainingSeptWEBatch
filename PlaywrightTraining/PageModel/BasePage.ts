@@ -1,4 +1,4 @@
-import { FrameLocator, Locator, Page } from "@playwright/test";
+import { BrowserContext, FrameLocator, Locator, Page } from "@playwright/test";
 
 export class BasePage {
   page: Page;
@@ -176,5 +176,20 @@ export class BasePage {
     await this.click(locator)
     const download = await downloadEvent
     await download.saveAs(filePath+download.suggestedFilename())
+  }
+
+  async acceptAlert(locator:string,message?:string){
+    this.page.on('dialog',async(dialog)=>{
+        console.log(dialog.message());
+        await this.page.waitForTimeout(5000);
+        await dialog.accept(message)
+    })
+    await this.click(this.getByLocator(locator));
+  }
+
+  async clickForNewPage(locator:string, context:BrowserContext):Promise<Page>{
+    const newPagePromise = context.waitForEvent('page');
+    await this.click(this.getByLocator('[href="/windows/new"]'));
+    return await newPagePromise;
   }
 }

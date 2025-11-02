@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test'
+import {test,expect, chromium, firefox} from '@playwright/test'
 import { BasePage } from '../PageModel/BasePage'
 
 /**
@@ -108,7 +108,7 @@ test("Nested frame example",async({page})=>{
 })
 
 
-test.only('Download File Example',async({page})=>{
+test('Download File Example',async({page})=>{
     basePage = new BasePage(page);
     await basePage.goto("https://the-internet.herokuapp.com");
     await basePage.click(basePage.getByLocator('[href="/download"]'));
@@ -118,3 +118,109 @@ test.only('Download File Example',async({page})=>{
     // await download.saveAs(process.cwd()+"/files/"+download.suggestedFilename())
     await basePage.download(basePage.getByLocator('[href="download/20MB.bin"]'),process.cwd()+"/files/");
 })
+
+test('Handling Alerts',async({page})=>{
+    basePage = new BasePage(page);
+    await basePage.goto("https://the-internet.herokuapp.com");
+    await basePage.click(basePage.getByLocator('[href="/javascript_alerts"]'));
+    await basePage.AcceptAlert('[onclick="jsAlert()"]')
+    await expect(basePage.getByLocator("#result")).toHaveText('You successfully clicked an alert');
+})
+
+test('Confirmation Alerts',async({page})=>{
+    basePage = new BasePage(page);
+    await basePage.goto("https://the-internet.herokuapp.com");
+    await basePage.click(basePage.getByLocator('[href="/javascript_alerts"]'));
+    // page.on('dialog',async(dialog)=>{
+    //     console.log(dialog.message());
+    //     await dialog.accept()
+    // })
+    // await basePage.click(basePage.getByLocator('[onclick="jsConfirm()"]'));
+    // await expect(basePage.getByLocator("#result")).toHaveText('You clicked: Ok');
+        page.on('dialog',async(dialog)=>{
+        console.log(dialog.message());
+        await dialog.dismiss();
+    })
+    await basePage.click(basePage.getByLocator('[onclick="jsConfirm()"]'));
+    await expect(basePage.getByLocator("#result")).toHaveText('You clicked: Cancel');
+})
+
+test('prompt Alerts',async({page})=>{
+    basePage = new BasePage(page);
+    await basePage.goto("https://the-internet.herokuapp.com");
+    await basePage.click(basePage.getByLocator('[href="/javascript_alerts"]'));
+    await basePage.acceptAlert('[onclick="jsPrompt()"]',"This is a demo text")
+    await expect(basePage.getByLocator("#result")).toHaveText('You entered: This is a demo text');
+})
+
+test('Hover test',async({page})=>{
+    basePage = new BasePage(page);
+    await basePage.goto("https://the-internet.herokuapp.com");
+    await basePage.click(basePage.getByLocator('[href="/hovers"]'));
+    await expect(basePage.getByLocator('[href="/users/1"]')).toBeHidden();
+    await basePage.getByLocator('[alt="User Avatar"]',0).hover();
+    await expect(basePage.getByLocator('[href="/users/1"]')).toBeVisible();
+})
+
+test('MultiWindow test',async()=>{
+    const browser = await firefox.launch({headless:false});
+    const context = await browser.newContext();
+    let page = await context.newPage();
+    basePage = new BasePage(page);
+    await basePage.goto("https://the-internet.herokuapp.com");
+    await basePage.click(basePage.getByLocator('[href="/windows"]'));
+    const newPage  = await basePage.clickForNewPage('[href="/windows/new"]',context);
+    // const newPagePromise = context.waitForEvent('page');
+    // await basePage.click(basePage.getByLocator('[href="/windows/new"]'));
+    // const newPage = await newPagePromise;
+    await expect(newPage.locator('.example h3')).toHaveText('New Window');
+    console.log(await page.locator('.example h3').allTextContents())
+    await expect(page.locator('.example h3')).toHaveText('Opening a new window');
+})
+
+test('Windows Authecation popup test', async()=>{
+    const browser = await firefox.launch({headless:false});
+    const context = await browser.newContext({
+        httpCredentials:{
+            username:'admin',
+            password:'admin'
+        },
+    });
+    let page = await context.newPage();
+    basePage = new BasePage(page);
+    await basePage.goto("https://the-internet.herokuapp.com");
+    await basePage.click(basePage.getByLocator('[href="/digest_auth"]'));
+    await expect(basePage.getByLocator(".example p")).toContainText('Congratulations! You must have the proper credentials.');
+})
+
+test.only('Drag drop', async({page})=>{
+    basePage = new BasePage(page);
+    await basePage.goto("https://the-internet.herokuapp.com");
+    await expect(basePage.page).toHaveTitle('The Internet'); // Page level assertion
+    await basePage.click(basePage.getByLocator('[href="/drag_and_drop"]'));
+    await basePage.page.waitForTimeout(5000);
+    await expect.soft(basePage.getByLocator("#column-a")).toHaveText('B'); // Locator level assertions
+    await page.locator("#column-a").dragTo(basePage.getByLocator("#column-b"));
+    await basePage.page.waitForTimeout(5000);
+    basePage.getByLocator("#column-a").waitFor({state:'visible',timeout:5000});
+    await expect(basePage.getByLocator("#column-a")).toHaveText('B'); // Locator level assertions
+    await page.screenshot()
+    expect(10).toBe(10)
+})
+
+/**
+ * waitforLoadState() : wait on the Page. Wait for a condition on the Page level
+ *  load: wait for all the Event of the page to get loaded.
+ *  domContentLoaded: Dom Object and the content of the page.
+ *  networkIdle:
+ * waitForTimeOut() : Equvalent to Thread.Sleep in Java
+ * waitFor() : This is application or i would say is applied on the Locator
+ */
+
+/**
+ * Assertions
+ * Page Assertions: Assertions applied on the page.
+ * Locator Assertions: You would apply assertion on the locator.
+ * Assertion for comparing values : values are equal , condition is true.
+ * 
+ */
