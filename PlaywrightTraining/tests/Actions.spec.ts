@@ -12,6 +12,8 @@ import { BasePage } from '../PageModel/BasePage'
  * Typing each key one by one
  */
    let basePage:BasePage
+
+test.describe('First two test method',async()=>{
 test("This is a method for demoing click action",async({page})=>{
     basePage = new BasePage(page);
     await basePage.goto("https://playwright.dev/");
@@ -30,6 +32,8 @@ test(" Fill and Press-sequentially example",async ({page})=>{
     // await basePage.getByLabel("Password").fill('SuperSecretPassword!');
     await basePage.click(basePage.getByLocator('.radius'))
 })
+})
+
 
 /**
  * Selecting using the following criteria
@@ -37,6 +41,8 @@ test(" Fill and Press-sequentially example",async ({page})=>{
  * using the Label
  * using the index
  */
+test.describe("Second group",
+    {tag:"@smoke"},async()=>{
 test('selecting Option test',async({page})=>{
     basePage = new BasePage(page);
     await basePage.goto("https://the-internet.herokuapp.com");
@@ -65,6 +71,8 @@ test('CheckBox example',async({page})=>{
     //await page.locator("#checkboxes input").nth(0).uncheck();
     await basePage.unCheck(basePage.getByLocator("#checkboxes input"));
 })
+})
+
 
 test('Upload file Example', async({page})=>{
     basePage = new BasePage(page);
@@ -178,7 +186,7 @@ test('MultiWindow test',async()=>{
     await expect(page.locator('.example h3')).toHaveText('Opening a new window');
 })
 
-test('Windows Authecation popup test', async()=>{
+test('Windows Authecation popup test',{tag:"@regression"}, async()=>{
     const browser = await firefox.launch({headless:false});
     const context = await browser.newContext({
         httpCredentials:{
@@ -193,7 +201,7 @@ test('Windows Authecation popup test', async()=>{
     await expect(basePage.getByLocator(".example p")).toContainText('Congratulations! You must have the proper credentials.');
 })
 
-test.only('Drag drop', async({page})=>{
+test('Drag drop', async({page})=>{
     basePage = new BasePage(page);
     await basePage.goto("https://the-internet.herokuapp.com");
     await expect(basePage.page).toHaveTitle('The Internet'); // Page level assertion
