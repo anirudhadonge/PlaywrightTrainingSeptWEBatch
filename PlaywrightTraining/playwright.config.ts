@@ -12,6 +12,7 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  globalSetup:'./Dotenv/SetupEnvironment.ts',
   timeout:30000, // Thrushold time i.e maximum time test take for execution
   expect:{
     timeout:5000

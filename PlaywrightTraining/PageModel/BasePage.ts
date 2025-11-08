@@ -1,4 +1,4 @@
-import { BrowserContext, FrameLocator, Locator, Page } from "@playwright/test";
+import { BrowserContext, expect, FrameLocator, Locator, Page } from "@playwright/test";
 
 export class BasePage {
   page: Page;
@@ -191,5 +191,13 @@ export class BasePage {
     const newPagePromise = context.waitForEvent('page');
     await this.click(this.getByLocator('[href="/windows/new"]'));
     return await newPagePromise;
+  }
+
+  async textContent(locator:Locator):Promise<string|null>{
+    return await locator.textContent();
+  }
+
+  async ValidateElementIsVisible(locator:Locator){
+    await expect(locator).toBeVisible();
   }
 }
