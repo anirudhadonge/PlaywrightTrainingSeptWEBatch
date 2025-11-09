@@ -2,8 +2,7 @@ import { BasePage } from '../PageModel/BasePage'
 import {test} from './../Fixture/Fixture'
 
 
-test('Custom fixture example',async({context, basePage,fixVariable})=>{
-    console.log(fixVariable);
+test('Custom fixture example',async({basePage})=>{
     await basePage.goto("https://the-internet.herokuapp.com/login");
     await basePage.pressSequentially(basePage.getByLabel("Username"),'tomsmith',500);
     // await basePage.getByLabel("Username").pressSequentially('tomsmith',{
